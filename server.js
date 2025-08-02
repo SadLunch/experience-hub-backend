@@ -2,6 +2,8 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -12,6 +14,8 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+const logFilePath = path.join(__dirname, 'experiment_log.txt');
 
 app.use(cors());
 app.use(express.json());
@@ -25,6 +29,16 @@ let numberOfUsers = {
   "justica-monstro": 0,
   "selfie": 0,
 }
+
+app.get("/logs", (req, res) => {
+  fs.readFile(logFilePath, 'utf-8', (error, data) => {
+    if (error) {
+      return res.status(500).send("Could not read log file.");
+    }
+
+    res.send(`<pre>${data}</pre>`)
+  })
+})
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
@@ -48,6 +62,18 @@ io.on("connection", (socket) => {
       io.emit("update_participants", numberOfUsers);
     }
   });
+
+  socket.on("completed_experiment", ({ experimentId, timeTaken }) => {
+    const logEntry = `${new Date().toISOString()} | SocketID: ${socket.id} | Experiment: ${experimentId} | Time Taken: ${timeTaken}`;
+
+    fs.appendFile(logFilePath, logEntry, (error) => {
+      if (error) {
+        console.log("Error writing to file:", error);
+      } else {
+        console.log("Log written:", logEntry.trim());
+      }
+    })
+  })
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
