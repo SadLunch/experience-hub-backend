@@ -64,7 +64,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("completed_experiment", ({ experimentId, timeTaken }) => {
-    const logEntry = `${new Date().toISOString()} | SocketID: ${socket.id} | Experiment: ${experimentId} | Time Taken: ${timeTaken}`;
+    const readableTime = new Date(timeTaken * 1000);
+    let utcString = readableTime.toUTCString();
+
+    let time = utcString.slice(-11, -4);
+    const logEntry = `${new Date().toISOString()} | SocketID: ${socket.id} | Experiment: ${experimentId} | Time Taken: ${time}\r\n`;
 
     fs.appendFile(logFilePath, logEntry, (error) => {
       if (error) {
