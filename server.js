@@ -64,7 +64,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("completed_experiment", ({ experimentId, timeTaken }) => {
-    const readableTime = new Date(timeTaken * 1000);
+    const readableTime = new Date(timeTaken);
     let utcString = readableTime.toUTCString();
 
     let time = utcString.slice(-11, -4);
