@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL, // Allow frontend connection
+    origin: [process.env.CLIENT_URL, "https://192.168.1.82"], // Allow frontend connection
     methods: ["GET", "POST"],
   },
 });
