@@ -67,7 +67,8 @@ io.on("connection", (socket) => {
     const readableTime = new Date(timeTaken);
     let utcString = readableTime.toUTCString();
 
-    let time = utcString.slice(-11, -4);
+    let time = `${readableTime.getUTCMinutes()}:${readableTime.getUTCSeconds()}.${readableTime.getUTCMilliseconds()}`
+    // let time = utcString.slice(-11, -4);
     const logEntry = `${new Date().toISOString()} | SocketID: ${socket.id} | Experiment: ${experimentId} | Time Taken: ${time}\r\n`;
 
     fs.appendFile(logFilePath, logEntry, (error) => {
