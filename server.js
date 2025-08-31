@@ -63,15 +63,25 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("completed_experiment", ({ experimentId, timeTaken }) => {
-    const readableTime = new Date(timeTaken);
-    let utcString = readableTime.toUTCString();
+  socket.on("completed_experiment", (data) => {
 
-    let time = `${readableTime.getUTCMinutes()}:${readableTime.getUTCSeconds()}.${readableTime.getUTCMilliseconds()}`
+
+    // const readableTime = new Date(data);
+
+    // let time = `${readableTime.getUTCMinutes()}:${readableTime.getUTCSeconds()}.${readableTime.getUTCMilliseconds()}`
     // let time = utcString.slice(-11, -4);
-    const logEntry = `${new Date().toISOString()} | SocketID: ${socket.id} | Experiment: ${experimentId} | Time Taken: ${time}\r\n`;
+    const logData = {
+      'Timestamp': new Date().toISOString(),
+      'SocketID': socket.id,
+      ...data
+    };
 
-    fs.appendFile(logFilePath, logEntry, (error) => {
+    const logEntry = Object.entries(logData).map(
+      (key, value) => `${key}: ${value}`
+    ).join(' | ');
+    // const logEntry = `${new Date().toISOString()} | SocketID: ${socket.id} | Experiment: ${experimentId} | Time Taken: ${time}\r\n`;
+
+    fs.appendFile(logFilePath, logEntry + '\r\n', (error) => {
       if (error) {
         console.log("Error writing to file:", error);
       } else {
