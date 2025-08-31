@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
     };
 
     const logEntry = Object.entries(logData).map(
-      (key, value) => `${key}: ${value}`
+      ([key, value]) => `${key}: ${value}`
     ).join(' | ');
     // const logEntry = `${new Date().toISOString()} | SocketID: ${socket.id} | Experiment: ${experimentId} | Time Taken: ${time}\r\n`;
 
